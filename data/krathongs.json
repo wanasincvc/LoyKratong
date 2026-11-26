@@ -1,0 +1,62 @@
+[
+  {
+    "id": "krathong-demo-1",
+    "name": "น้องมะลิ",
+    "wish": "ขอขมาพระแม่คงคา ขอให้ปีนี้มีแต่เรื่องดีๆ สุขภาพแข็งแรงทั้งครอบครัวค่ะ 🌸",
+    "base": "banana_leaf",
+    "flower": "marigold",
+    "candle": "gold",
+    "incense": true,
+    "coin": "gold",
+    "timestamp": 1795503464298,
+    "likes": 12
+  },
+  {
+    "id": "krathong-demo-2",
+    "name": "พี่กานต์",
+    "wish": "ขอให้โปรเจกต์ผ่านฉลุย งานราบรื่น ไม่ติดบั๊กครับ 🌕✨",
+    "base": "lotus",
+    "flower": "orchid",
+    "candle": "ruby",
+    "incense": true,
+    "coin": "silver",
+    "timestamp": 1795505264298,
+    "likes": 8
+  },
+  {
+    "id": "krathong-demo-3",
+    "name": "น้องบัวตอง",
+    "wish": "ขอให้คุณพ่อคุณแม่สุขภาพแข็งแรง และขอให้หนูสอบได้เกรด 4 ทุกวิชาค่ะ 🪷",
+    "base": "bread",
+    "flower": "lotus_bloom",
+    "candle": "crystal",
+    "incense": true,
+    "coin": "gold",
+    "timestamp": 1795506464298,
+    "likes": 15
+  },
+  {
+    "id": "krathong-demo-4",
+    "name": "นที & แพรวา",
+    "wish": "ขอให้รักกันไปนานๆ และเป็นกำลังใจให้กันแบบนี้ตลอดไป 💖",
+    "base": "coconut",
+    "flower": "rose",
+    "candle": "gold",
+    "incense": true,
+    "coin": "gold",
+    "timestamp": 1795506764298,
+    "likes": 24
+  },
+  {
+    "id": "krathong-demo-5",
+    "name": "คุณยายทองใบ",
+    "wish": "ขอขมาพระแม่คงคา ขอให้ลูกหลานทุกคนอยู่เย็นเป็นสุข ปลอดภัย และสุขภาพแข็งแรง 🙏✨",
+    "base": "banana_leaf",
+    "flower": "lotus_bloom",
+    "candle": "gold",
+    "incense": true,
+    "coin": "gold",
+    "timestamp": 1795507565629,
+    "likes": 19
+  }
+]

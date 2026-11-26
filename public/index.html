@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌕 ลอยกระทงออนไลน์ | Online Loy Krathong</title>
+  <meta name="description" content="เว็บลอยกระทงออนไลน์ เลือกตกแต่งกระทง เขียนคำอธิษฐานขอขมาพระแม่คงคา และลอยกระทงร่วมกันแบบ Real-time">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230b132b'/%3E%3Ccircle cx='44' cy='18' r='8' fill='%23fef08a'/%3E%3Cellipse cx='32' cy='46' rx='20' ry='7' fill='%2340916c'/%3E%3Crect x='30' y='28' width='4' height='14' rx='2' fill='%23fde047'/%3E%3Cpath d='M32 18 C29 23 30 27 32 27 C34 27 35 23 32 18 Z' fill='%23f97316'/%3E%3C/svg%3E">
+
+  <!-- Google Fonts: Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- River & Sky Simulation Canvas -->
+  <canvas id="riverCanvas" aria-label="ฉากแม่น้ำและท้องฟ้ายามค่ำคืนสำหรับลอยกระทง"></canvas>
+
+  <!-- Top Navigation / Status Header -->
+  <header class="top-header">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">🪷</div>
+      <div class="brand-text">
+        <h1 class="brand-title">ลอยกระทงออนไลน์</h1>
+        <p class="brand-subtitle">วันเพ็ญเดือนสิบสอง</p>
+      </div>
+    </div>
+
+    <!-- Live Counters -->
+    <div class="stats-badge">
+      <div class="stat-item" title="จำนวนผู้ที่กำลังออนไลน์ตอนนี้">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span class="stat-label">ออนไลน์</span>
+        <span class="stat-value" id="onlineUsersCount">1</span>
+        <span class="stat-unit">คน</span>
+      </div>
+      <div class="stat-divider" aria-hidden="true"></div>
+      <div class="stat-item" title="จำนวนกระทงที่ลอยไปแล้วทั้งหมด">
+        <span class="stat-icon" aria-hidden="true">🪷</span>
+        <span class="stat-label">ลอยแล้ว</span>
+        <span class="stat-value" id="totalFloatedCount">0</span>
+        <span class="stat-unit">ใบ</span>
+      </div>
+    </div>
+
+    <!-- Quick Action Controls -->
+    <div class="header-actions">
+      <button type="button" id="soundToggleBtn" class="action-btn icon-only" title="ปิดเสียงบรรยากาศ" aria-label="เปิดหรือปิดเสียงบรรยากาศ" aria-pressed="true">
+        <span id="soundIcon" aria-hidden="true">🔊</span>
+      </button>
+      <button type="button" id="openListModalBtn" class="action-btn" title="ดูคำอธิษฐานล่าสุด">
+        <span aria-hidden="true">📜</span> คำอธิษฐาน
+      </button>
+      <button type="button" id="skyLanternBtn" class="action-btn" title="ปล่อยโคมลอยขึ้นฟ้า">
+        <span aria-hidden="true">🏮</span> ปล่อยโคม
+      </button>
+      <button type="button" id="fireworksBtn" class="action-btn" title="จุดพลุ">
+        <span aria-hidden="true">🎆</span> จุดพลุ
+      </button>
+      <button type="button" id="openCreateModalBtn" class="action-btn primary-glow">
+        <span aria-hidden="true">🪷</span> สร้างกระทง
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Hint Banner -->
+  <div class="hint-banner" id="hintBanner">
+    <span>💡 <strong>คำแนะนำ:</strong> คลิกที่ <em>กระทงในน้ำ</em> เพื่ออ่านคำอธิษฐาน หรือคลิกบน <em>ท้องฟ้า</em> เพื่อจุดพลุ</span>
+    <button type="button" class="hint-close" id="hintCloseBtn" aria-label="ปิดคำแนะนำ">&times;</button>
+  </div>
+
+  <!-- Bottom Floating Action Dock for Mobile -->
+  <div class="mobile-float-bar">
+    <button type="button" id="mobileLanternBtn" class="mobile-mini-btn" title="ปล่อยโคมลอย" aria-label="ปล่อยโคมลอย">🏮</button>
+    <button type="button" id="mobileFireworkBtn" class="mobile-mini-btn" title="จุดพลุ" aria-label="จุดพลุ">🎆</button>
+    <button type="button" id="mobileListBtn" class="mobile-mini-btn" title="ดูคำอธิษฐานล่าสุด" aria-label="ดูคำอธิษฐานล่าสุด">📜</button>
+    <button type="button" id="mobileCreateBtn" class="mobile-create-btn">
+      <span>🪷 สร้างกระทงของคุณ</span>
+    </button>
+  </div>
+
+  <!-- Modal: Create & Float Krathong -->
+  <div class="modal-overlay" id="createModalOverlay" role="dialog" aria-modal="true" aria-labelledby="createModalTitle" aria-hidden="true">
+    <div class="modal-card modal-lg">
+      <button type="button" class="modal-close" id="closeCreateModalBtn" aria-label="ปิดหน้าต่างสร้างกระทง">&times;</button>
+      
+      <div class="modal-header">
+        <h2 id="createModalTitle">🪷 ตกแต่งกระทงของคุณ</h2>
+        <p>เลือกฐานกระทง ดอกไม้ สีเทียน และเขียนคำอธิษฐานขอขมาพระแม่คงคา</p>
+      </div>
+
+      <div class="create-layout">
+        <!-- Live Preview Column -->
+        <div class="preview-col">
+          <div class="preview-water-box">
+            <div class="preview-moonlight"></div>
+            <div class="preview-svg-container" id="previewContainer">
+              <!-- SVG Krathong will be rendered here dynamically -->
+            </div>
+            <div class="preview-reflection"></div>
+          </div>
+          <div class="preview-caption">
+            <span id="previewBaseName">กระทงใบตอง</span> • 
+            <span id="previewFlowerName">ดอกดาวเรือง</span>
+          </div>
+          <div class="preview-desc" id="previewDesc">กระทงใบตองจับจีบแบบดั้งเดิม • ดอกดาวเรืองสีเหลืองสดใส</div>
+          <button type="button" id="randomizeKrathongBtn" class="randomize-btn" title="สุ่มจับคู่ตกแต่งกระทงแบบใหม่">
+            🎲 สุ่มตกแต่งกระทง
+          </button>
+        </div>
+
+        <!-- Options Customizer Column -->
+        <div class="options-col">
+          <!-- 1. Base selection -->
+          <div class="form-section">
+            <label class="section-title">1. เลือกฐานกระทง</label>
+            <div class="chip-grid" id="baseOptions">
+              <button type="button" class="chip active" data-base="banana_leaf" aria-pressed="true">🍃 ใบตองจับจีบ</button>
+              <button type="button" class="chip" data-base="lotus" aria-pressed="false">🌸 กลีบบัว</button>
+              <button type="button" class="chip" data-base="coconut" aria-pressed="false">🥥 กะลามะพร้าว</button>
+              <button type="button" class="chip" data-base="bread" aria-pressed="false">🐢 ขนมปัง</button>
+              <button type="button" class="chip" data-base="ice" aria-pressed="false">🧊 น้ำแข็ง</button>
+              <button type="button" class="chip" data-base="bamboo" aria-pressed="false">🎋 ไม้ไผ่สาน</button>
+              <button type="button" class="chip" data-base="swan" aria-pressed="false">🦢 เรือหงส์ทอง</button>
+              <button type="button" class="chip" data-base="corn_husk" aria-pressed="false">🌽 เปลือกข้าวโพด</button>
+            </div>
+          </div>
+
+          <!-- 2. Flower selection -->
+          <div class="form-section">
+            <label class="section-title">2. เลือกดอกไม้ประดับ</label>
+            <div class="chip-grid" id="flowerOptions">
+              <button type="button" class="chip active" data-flower="marigold" aria-pressed="true">🌼 ดอกดาวเรือง</button>
+              <button type="button" class="chip" data-flower="orchid" aria-pressed="false">💜 ดอกกล้วยไม้</button>
+              <button type="button" class="chip" data-flower="rose" aria-pressed="false">🌹 ดอกกุหลาบ</button>
+              <button type="button" class="chip" data-flower="lotus_bloom" aria-pressed="false">🪷 ดอกบัวหลวง</button>
+              <button type="button" class="chip" data-flower="jasmine" aria-pressed="false">🤍 ดอกมะลิ</button>
+              <button type="button" class="chip" data-flower="globe_amaranth" aria-pressed="false">🟣 บานไม่รู้โรย</button>
+              <button type="button" class="chip" data-flower="sunflower" aria-pressed="false">🌻 ทานตะวัน</button>
+              <button type="button" class="chip" data-flower="cherry_blossom" aria-pressed="false">🌸 ซากุระ</button>
+            </div>
+          </div>
+
+          <!-- 3. Candle, Incense & Coin -->
+          <div class="form-section form-row">
+            <div class="form-col">
+              <div class="section-header-inline">
+                <label class="section-title">3. สีเทียนและธูป</label>
+                <button type="button" id="incenseToggleBtn" class="chip chip-sm active" aria-pressed="true" title="เปิดหรือปิดการปักธูป 3 ดอก">🙏 ธูป 3 ดอก</button>
+              </div>
+              <div class="chip-grid" id="candleOptions">
+                <button type="button" class="chip active" data-candle="gold" aria-pressed="true">🟡 สีทอง</button>
+                <button type="button" class="chip" data-candle="ruby" aria-pressed="false">🔴 สีแดง</button>
+                <button type="button" class="chip" data-candle="crystal" aria-pressed="false">🔵 สีฟ้า</button>
+                <button type="button" class="chip" data-candle="emerald" aria-pressed="false">🟢 สีเขียว</button>
+                <button type="button" class="chip" data-candle="amethyst" aria-pressed="false">🟣 สีม่วง</button>
+              </div>
+            </div>
+            <div class="form-col">
+              <label class="section-title">4. ใส่เหรียญ / พลอยมงคล</label>
+              <div class="chip-grid" id="coinOptions">
+                <button type="button" class="chip active" data-coin="gold" aria-pressed="true">🪙 เหรียญทอง</button>
+                <button type="button" class="chip" data-coin="silver" aria-pressed="false">🥈 เหรียญเงิน</button>
+                <button type="button" class="chip" data-coin="lucky_gem" aria-pressed="false">💎 พลอยมงคล</button>
+                <button type="button" class="chip" data-coin="none" aria-pressed="false">❌ ไม่ใส่</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Extra decorations -->
+          <div class="form-section">
+            <label class="section-title">5. ของประดับพิเศษ</label>
+            <div class="chip-grid" id="decorOptions">
+              <button type="button" class="chip active" data-decor="none" aria-pressed="true">✨ เรียบง่าย</button>
+              <button type="button" class="chip" data-decor="garland" aria-pressed="false">💐 พวงมาลัยดอกรัก</button>
+              <button type="button" class="chip" data-decor="umbrella" aria-pressed="false">☂️ ร่มกระดาษล้านนา</button>
+              <button type="button" class="chip" data-decor="flag" aria-pressed="false">🚩 ธงฉัตรทองคู่</button>
+            </div>
+          </div>
+
+          <!-- 6. Name & Wish -->
+          <div class="form-section">
+            <label class="section-title" for="authorName">6. ชื่อผู้ลอย</label>
+            <input type="text" id="authorName" class="form-input" placeholder="เช่น น้องมะลิ, กานต์ และครอบครัว (เว้นว่างได้)" maxlength="40" autocomplete="nickname">
+          </div>
+
+          <div class="form-section">
+            <label class="section-title" for="authorWish">7. คำอธิษฐาน / ขอขมาพระแม่คงคา</label>
+            
+            <!-- Quick Wish Pills -->
+            <div class="quick-wishes" id="quickWishes">
+              <button type="button" class="quick-pill" data-wish="ขอขมาพระแม่คงคา ขอให้สุขภาพแข็งแรง ปราศจากโรคภัยไข้เจ็บ">🌿 สุขภาพแข็งแรง</button>
+              <button type="button" class="quick-pill" data-wish="ขอให้การงานราบรื่น เจริญก้าวหน้า เงินทองไหลมาเทมา">💼 การงานและการเงิน</button>
+              <button type="button" class="quick-pill" data-wish="ขอให้สมหวังในความรัก เจอแต่คนดีๆ และมีความสุขใจ">💑 ความรัก</button>
+              <button type="button" class="quick-pill" data-wish="ขอให้การเรียนราบรื่น สอบผ่านทุกวิชา ได้เกรดดีๆ ตามที่ตั้งใจ">📚 การเรียน</button>
+            </div>
+
+            <textarea id="authorWish" class="form-textarea" rows="3" maxlength="250" placeholder="พิมพ์คำอธิษฐานของคุณที่นี่..."></textarea>
+            <div class="textarea-footer">
+              <span class="form-error" id="wishError" role="alert"></span>
+              <div class="char-count"><span id="charNum">0</span>/250</div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="button" id="submitFloatBtn" class="submit-float-btn">
+            <span>🌕 อธิษฐานและลอยกระทง</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: View Floating Krathong Details -->
+  <div class="modal-overlay" id="detailModalOverlay" role="dialog" aria-modal="true" aria-labelledby="detailAuthor" aria-hidden="true">
+    <div class="modal-card modal-sm">
+      <button type="button" class="modal-close" id="closeDetailModalBtn" aria-label="ปิดหน้าต่างคำอธิษฐาน">&times;</button>
+      
+      <div class="detail-krathong-visual" id="detailKrathongVisual">
+        <!-- Krathong SVG -->
+      </div>
+
+      <div class="detail-body">
+        <div class="detail-author" id="detailAuthor">ผู้ไม่ประสงค์ออกนาม</div>
+        <div class="detail-time" id="detailTime">เมื่อสักครู่</div>
+        <div class="detail-wish-quote">
+          <p id="detailWishText">คำอธิษฐาน...</p>
+        </div>
+
+        <div class="detail-actions">
+          <button type="button" id="likeKrathongBtn" class="like-btn">
+            <span class="like-icon" aria-hidden="true">❤️</span> 
+            <span class="like-text">ส่งกำลังใจ</span> 
+            <span class="like-badge" id="detailLikesCount">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Recent Krathongs / Wishes List -->
+  <div class="modal-overlay" id="listModalOverlay" role="dialog" aria-modal="true" aria-labelledby="listModalTitle" aria-hidden="true">
+    <div class="modal-card modal-md">
+      <button type="button" class="modal-close" id="closeListModalBtn" aria-label="ปิดรายการคำอธิษฐาน">&times;</button>
+
+      <div class="modal-header">
+        <h2 id="listModalTitle">📜 คำอธิษฐานในสายน้ำ</h2>
+        <p>คลิกที่รายการเพื่อเปิดดูกระทงและส่งกำลังใจให้ผู้ร่วมลอย</p>
+      </div>
+
+      <div class="recent-list" id="recentKrathongsList">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Easter Egg Breaking News Banner -->
+  <div class="easter-egg-banner" id="easterEggBanner" role="status" aria-live="polite">
+    <span class="news-badge">🚨 ข่าวด่วน</span>
+    <span class="news-text" id="easterEggText">โคมลอยชนเครื่องบินตกน้ำ! อย่าปล่อยโคมใกล้เส้นทางบินนะครับ ✈️💥</span>
+  </div>
+
+  <!-- Success Toast Floating Effect -->
+  <div class="toast-notification" id="toastNotification" role="status" aria-live="polite">
+    <span class="toast-icon" aria-hidden="true">✨</span>
+    <span class="toast-msg" id="toastMsg">ลอยกระทงของคุณเรียบร้อยแล้ว ขอให้สมดังปรารถนา</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="krathong-art.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
