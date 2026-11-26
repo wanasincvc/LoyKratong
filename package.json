@@ -1,0 +1,26 @@
+{
+  "name": "loy-krathong-online",
+  "version": "1.0.0",
+  "description": "เว็บลอยกระทงออนไลน์แบบ Real-time พัฒนาด้วย Node.js, Express และ Socket.io",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "loy-krathong",
+    "nodejs",
+    "socketio",
+    "thai-festival",
+    "canvas",
+    "realtime"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "socket.io": "^4.8.4"
+  }
+}
